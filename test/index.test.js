@@ -2036,6 +2036,33 @@ describe('lmdb-js', function () {
 			all.should.deep.equal([2, { error: 'Error: test' }, 6, 4, 5, 6]);
 			expect(finished).to.be.equal(1);
 		});
+		it('take', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.take(2).asArray.should.deep.equal([1, 2]);
+		});
+		it('drop', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.drop(2).asArray.should.deep.equal([3, 4]);
+		});
+		it('reduce', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.reduce((sum, value) => sum + value, 0).should.equal(10);
+		});
+		it('some', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.some((value) => value > 2).should.equal(true);
+			ri.some((value) => value > 4).should.equal(false);
+		});
+		it('every', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.every((value) => value > 2).should.equal(false);
+			ri.every((value) => value > 0).should.equal(true);
+		});
+		it('find', function () {
+			const ri = new RangeIterable([1, 2, 3, 4]);
+			ri.find((value) => value > 2).should.equal(3);
+			should.equal(ri.find((value) => value > 4), undefined);
+		})
 	});
 	describe('mixed keys', function () {
 		this.timeout(10000);
