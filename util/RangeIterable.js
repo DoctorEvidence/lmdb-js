@@ -427,5 +427,68 @@ export class RangeIterable {
 			if (index-- === 0) return entry;
 		}
 	}
+
+	take(limit) {
+		let iterator = (this.iterator = this.iterate());
+		let iterable = new RangeIterable();
+		iterable.iterate = function * () {
+			for (let i = 0; i < limit; i++) {
+				yield iterator.next().value;
+			}
+		}
+		return iterable
+	}
+
+	drop(limit) {
+		let iterator = (this.iterator = this.iterate());
+		let iterable = new RangeIterable();
+		iterable.iterate = function * () {
+			for (let i = 0; i < limit; i++) {
+				iterator.next();
+			}
+			let result;
+			while ((result = iterator.next()).done !== true) {
+				yield result.value;
+			}
+		}
+		return iterable;
+	}
+
+	reduce(reducer, initialValue) {
+		let result = initialValue;
+		let iterator = (this.iterator = this.iterate());
+		let iteratorResult;
+		while ((iteratorResult = iterator.next()).done !== true) {
+			result = reducer(result, iteratorResult.value)
+		}
+		return result;
+	}
+
+	some(callback) {
+		let iterator = (this.iterator = this.iterate());
+		let result;
+		while ((result = iterator.next()).done !== true) {
+			if (callback(result.value)) { return true }
+		}
+		return false
+	}
+
+	every(callback) {
+		let iterator = (this.iterator = this.iterate());
+		let result;
+		while ((result = iterator.next()).done !== true) {
+			if (!callback(result.value)) { return false }
+		}
+		return true
+	}
+
+	find(callback) {
+		let iterator = (this.iterator = this.iterate());
+		let result;
+		while ((result = iterator.next()).done !== true) {
+			if (callback(result.value)) { return result.value }
+		}
+		return undefined
+	}
 }
 RangeIterable.prototype.DONE = DONE;
